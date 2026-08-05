@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/docustream.iml" filepath="$PROJECT_DIR$/.idea/docustream.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/vectorrag.iml" filepath="$PROJECT_DIR$/.idea/vectorrag.iml" />
     </modules>
   </component>
 </project>
