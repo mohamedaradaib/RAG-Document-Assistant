@@ -1,7 +1,5 @@
 # VectorRAG
 
-A Retrieval-Augmented Generation (RAG) Artificial Intelligence (AI) Agent application
-
 ## Planned Features
 
 - [ ] PDF ingestion and chunking
