@@ -1,6 +1,6 @@
 # VectorRAG
 
-A Retrieval-Augmented Generation (RAG) application.
+A Retrieval-Augmented Generation (RAG) Artificial Intelligence (AI) Agent application
 
 ## Planned Features
 
