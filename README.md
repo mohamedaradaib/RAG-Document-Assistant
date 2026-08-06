@@ -2,10 +2,6 @@
 
 A Retrieval-Augmented Generation (RAG) application.
 
-## Project Status
-
-🚧 **Early Development** - Core structure and dependencies being set up.
-
 ## Planned Features
 
 - [ ] PDF ingestion and chunking
