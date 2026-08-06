@@ -1,6 +1,6 @@
-# VectorRAG (WIP)
+# VectorRAG
 
-A Retrieval-Augmented Generation (RAG) application in early development. Currently setting up core infrastructure with FastAPI, LlamaIndex, Qdrant, and Streamlit.
+A Retrieval-Augmented Generation (RAG) application.
 
 ## Project Status
 
@@ -16,7 +16,7 @@ A Retrieval-Augmented Generation (RAG) application in early development. Current
 - [ ] API endpoints
 - [ ] Workflow orchestration with Inngest
 
-## Tech Stack (Planned)
+## Tech Stack
 
 - FastAPI - Web framework
 - LlamaIndex - Data indexing
