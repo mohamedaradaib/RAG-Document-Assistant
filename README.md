@@ -1,11 +1,14 @@
 # RAG Agent
-A modular Retrieval-Augmented Generation (RAG) system built with FastAPI, Qdrant, LlamaIndex, and Streamlit. VectorRAG provides ingestion, embedding, vector storage, and query capabilities with a clean workflow orchestration layer powered by Inngest.
+A Retrieval-Augmented Generation (RAG) system designed to streamline your workflow by transforming scattered documents into an interactive actionable knowledge base. 
 
 ## Tech Stack
 
-- FastAPI - Web framework
+- Python - Programming language
+- FastAPI - Python framework
 - LlamaIndex - Data indexing
 - Qdrant - Vector database
 - Streamlit - Frontend UI
-- OpenAI - Embeddings & LLM
 - Inngest - Workflow orchestration
+
+## License
+Distrubuted under the MIT License. See `LICENSE` for more information.
