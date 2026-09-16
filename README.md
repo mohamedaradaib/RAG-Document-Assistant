@@ -3,12 +3,12 @@ A Retrieval-Augmented Generation (RAG) system designed to streamline your workfl
 
 ## Tech Stack
 
-- Python - Programming language
-- FastAPI - Python framework
-- LlamaIndex - Data indexing
-- Qdrant - Vector database
-- Streamlit - Frontend UI
-- Inngest - Workflow orchestration
+- Python
+- FastAPI
+- LlamaIndex
+- Qdrant
+- Streamlit
+- Inngest
 
 ## License
-Distrubuted under the MIT License. See `LICENSE` for more information.
+Distributed under the MIT License.
