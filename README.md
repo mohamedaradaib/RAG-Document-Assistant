@@ -11,4 +11,4 @@ A Retrieval-Augmented Generation (RAG) system designed to streamline your workfl
 - Inngest
 
 ## License
-MIT License.
+[LICENSE](./LICENSE)
