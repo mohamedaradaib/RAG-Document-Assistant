@@ -1,5 +1,5 @@
-# RAG Agent
-A Retrieval-Augmented Generation (RAG) system designed to streamline your workflow by transforming scattered documents into an interactive actionable knowledge base. 
+# AI RAG Agent
+An Artificial Intelligence Retrieval-Augmented Generation Agent designed to transfer data into an interactive actionable knowledge base. 
 
 ## Tech Stack
 
@@ -9,6 +9,8 @@ A Retrieval-Augmented Generation (RAG) system designed to streamline your workfl
 - Qdrant
 - Streamlit
 - Inngest
+
+## Live Demo
 
 ## License
 [LICENSE](./LICENSE)
