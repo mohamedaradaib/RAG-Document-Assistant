@@ -31,5 +31,4 @@ async def rag_ingest_pdf(ctx: inngest.Context):
 
 app = FastAPI()
 
-inngest.fast_api.serve(app, inngest_client, functions:[])
-
+inngest.fast_api.serve(app, inngest_client)
