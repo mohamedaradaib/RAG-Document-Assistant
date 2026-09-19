@@ -1,5 +1,5 @@
 [project]
-name = "vectorrag"
+name = "AI RAG Agent"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
@@ -20,7 +20,7 @@ dependencies = [
 ]
 
 [project.scripts]
-vectorrag = "vectorrag:main"
+AI RAG Agent = "AI RAG Agent:main"
 
 [build-system]
 requires = ["uv_build>=0.12.0,<0.13.0"]
