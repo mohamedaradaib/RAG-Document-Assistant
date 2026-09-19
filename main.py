@@ -26,7 +26,7 @@ inngest_client = inngest.Inngest(
 )
 
 async def rag_ingest_pdf(ctx: inngest.Context):
-    return {"": ""}
+    return {"placeholder": "placeholder"}
 
 
 app = FastAPI()
