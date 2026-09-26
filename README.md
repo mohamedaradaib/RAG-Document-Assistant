@@ -1,6 +1,8 @@
 # AI RAG Agent
 An Artificial Intelligence Retrieval-Augmented Generation Agent designed to transfer data into an interactive actionable knowledge base.
 
+## Features
+
 ## Tech Stack
 
 - Python
@@ -9,8 +11,22 @@ An Artificial Intelligence Retrieval-Augmented Generation Agent designed to tran
 - Qdrant
 - Streamlit
 - Inngest
+- OpenAI
+
+## Getting Started
+### Prerequisites
+- Open API Key
+
+### Installation
+1. Clone the repository
+```bash
+git clone https://github.com/mohamedaradaib/Collaborative-Editor.git
+cd Collaborative-Editor
+```
 
 ## Live Demo
+
+## How it Works
 
 ## License
 [LICENSE](./LICENSE)
