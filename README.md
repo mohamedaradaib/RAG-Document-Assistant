@@ -20,8 +20,8 @@ An Artificial Intelligence Retrieval-Augmented Generation Agent designed to tran
 ### Installation
 1. Clone the repository
 ```bash
-git clone https://github.com/mohamedaradaib/Collaborative-Editor.git
-cd Collaborative-Editor
+git clone https://github.com/mohamedaradaib/AI-RAG-Agent.git
+cd AI-RAG-Agent
 ```
 
 ## Live Demo
