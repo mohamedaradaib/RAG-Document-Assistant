@@ -2,17 +2,15 @@
 An Artificial Intelligence Retrieval-Augmented Generation Agent designed to transfer data into an interactive actionable knowledge base.
 
 ## Features
-- PDF upload and ingestion flow from the Streamlit UI
-- Automatic PDF chunking using sentence-aware splitting
-- Embedding generation with OpenAI `text-embedding-3-large`
-- Semantic retrieval from a Qdrant vector database
-- Context-grounded answer generation using GPT models
-- Event-driven workflows with Inngest for async processing and observability
-- Source tracking so answers can be traced back to the uploaded documents
-- Local development setup suitable for experimenting with production-style RAG patterns
+- Upload PDFs and submit questions in the Streamlit app
+- Extract text from PDFs and split it into overlapping chunks
+- Create embeddings with OpenAI's `text-embedding-3-large` model
+- Store chunks in Qdrant and search for relevant passages
+- Include source names with search results
+- Use Inngest to send upload and question events
 
 ## How it Works
-Users upload a PDF through the Streamlit app, which triggers an Inngest workflow that extracts and chunks the document, embeds each chunk with OpenAI, and stores the vectors in Qdrant for semantic search. When a question is asked, the app embeds the query, retrieves the most relevant chunks, and sends them to GPT-4o-mini to generate a concise answer grounded in the document context.
+The Streamlit app sends PDF uploads and questions to Inngest. Helper code is in place to extract PDF text, split it into chunks, create embeddings, and store or search them in Qdrant. The Inngest upload function currently returns a placeholder, and there is no question handler yet, so these pieces are not connected into a working question-and-answer flow.
 
 ## Tech Stack
 
@@ -34,6 +32,35 @@ Users upload a PDF through the Streamlit app, which triggers an Inngest workflow
 git clone https://github.com/mohamedaradaib/AI-RAG-Agent.git
 cd AI-RAG-Agent
 ```
+
+## Run the Application
+1. Create a `.env` file in the project root and add your OpenAI key:
+```env
+OPENAI_API_KEY=your_openai_api_key
+INNGEST_DEV=true
+```
+
+2. Install the project dependencies:
+```bash
+uv sync
+```
+
+3. Start the Inngest Dev Server in a terminal:
+```bash
+npx inngest-cli@latest dev
+```
+
+4. Start the FastAPI application in a second terminal:
+```bash
+uv run uvicorn main:app --reload --port 8000
+```
+
+5. Start Streamlit in a third terminal:
+```bash
+uv run streamlit run streamlit_app.py
+```
+
+Open the Streamlit URL, `http://localhost:8501`.
 
 ## Live Demo
 
