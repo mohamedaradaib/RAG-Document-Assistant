@@ -41,7 +41,7 @@ async def send_rag_ingest_event(pdf_path: Path) -> None:
 
 
 st.title("Upload PDF")
-uploaded = st.file_uploader("Choose a PDF", type=["pdf"], accept_multiple_files=False)
+uploaded = st.file_uploader("Upload a PDF", type=["pdf"], accept_multiple_files=False)
 
 if uploaded is not None:
     with st.spinner("Uploading and triggering ingestion..."):
@@ -51,7 +51,7 @@ if uploaded is not None:
         # Small pause for user feedback continuity
         time.sleep(0.3)
     st.success(f"Triggered ingestion for: {path.name}")
-    st.caption("You can upload another PDF if you like.")
+    st.caption("Optional: Upload another PDF")
 
 st.divider()
 st.title("PDF Query")
