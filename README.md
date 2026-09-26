@@ -3,6 +3,8 @@ An Artificial Intelligence Retrieval-Augmented Generation Agent designed to tran
 
 ## Features
 
+## How it Works
+
 ## Tech Stack
 
 - Python
@@ -15,7 +17,7 @@ An Artificial Intelligence Retrieval-Augmented Generation Agent designed to tran
 
 ## Getting Started
 ### Prerequisites
-- Open API Key
+- OpenAI API Key
 
 ### Installation
 1. Clone the repository
@@ -25,8 +27,6 @@ cd AI-RAG-Agent
 ```
 
 ## Live Demo
-
-## How it Works
 
 ## License
 [LICENSE](./LICENSE)
