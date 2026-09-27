@@ -10,7 +10,7 @@ import requests
 
 load_dotenv()
 
-st.set_page_config(page_title="RAG Ingest PDF", page_icon="📄", layout="centered")
+st.set_page_config
 
 
 @st.cache_resource
@@ -50,8 +50,6 @@ if uploaded is not None:
         asyncio.run(send_rag_ingest_event(path))
         # Small pause for user feedback continuity
         time.sleep(0.3)
-    st.success(f"Triggered ingestion for: {path.name}")
-    st.caption("Optional: Upload another PDF")
 
 st.divider()
 st.title("PDF Query")

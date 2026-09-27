@@ -65,4 +65,4 @@ Open the Streamlit localhost URL - `http://localhost:8501`
 ## Live Demo
 
 ## License
-[LICENSE](./LICENSE)
+[LICENSE](./LICENSE) 
