@@ -10,7 +10,7 @@ An Artificial Intelligence Retrieval-Augmented Generation Agent designed to tran
 - Use Inngest to send upload and question events
 
 ## How it Works
-The Streamlit app sends PDF uploads and questions to Inngest. Helper code is in place to extract PDF text, split it into chunks, create embeddings, and store or search them in Qdrant. The Inngest upload function currently returns a placeholder, and there is no question handler yet, so these pieces are not connected into a working question-and-answer flow.
+This app lets users upload a PDF in Streamlit, processes the document into searchable text chunks, embeds those chunks with OpenAI, and stores them in Qdrant for semantic retrieval. When a question is asked, the app searches the most relevant chunks, uses them as context, and generates a grounded answer with source references so the response is based on the uploaded document content instead of general knowledge.
 
 ## Tech Stack
 
@@ -60,7 +60,7 @@ uv run uvicorn main:app --reload --port 8000
 uv run streamlit run streamlit_app.py
 ```
 
-Open the Streamlit URL, `http://localhost:8501`.
+Open the Streamlit localhost URL - `http://localhost:8501`
 
 ## Live Demo
 
