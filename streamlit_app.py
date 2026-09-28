@@ -10,7 +10,7 @@ import requests
 
 load_dotenv()
 
-st.set_page_config
+st.set_page_config(page_title="localhost", layout="wide")
 
 
 @st.cache_resource
@@ -51,7 +51,6 @@ if uploaded is not None:
         # Small pause for user feedback continuity
         time.sleep(0.3)
 
-st.divider()
 st.title("PDF Query")
 
 
