@@ -33,7 +33,7 @@ git clone https://github.com/mohamedaradaib/AI-RAG-Agent.git
 cd AI-RAG-Agent
 ```
 
-## Run the Application
+### Run the Application
 1. Create a `.env` file in the project root and add your OpenAI key:
 ```env
 OPENAI_API_KEY=your_openai_api_key
