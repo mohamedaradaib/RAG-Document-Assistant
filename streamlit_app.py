@@ -10,8 +10,19 @@ import requests
 
 load_dotenv()
 
-st.set_page_config(page_title="localhost", layout="wide")
+st.set_page_config(page_title="localhost", page_icon="", layout="wide")
 
+st.markdown(
+    """
+    <style>
+    #MainMenu,
+    [data-testid="stToolbar"] {
+        visibility: hidden !important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
 
 @st.cache_resource
 def get_inngest_client() -> inngest.Inngest:
