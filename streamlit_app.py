@@ -16,10 +16,7 @@ st.markdown(
     """
     <style>
     #MainMenu,
-    [data-testid="stToolbar"],
-    [data-testid="stHeaderActionElements"] {
-        visibility: hidden !important;
-    }
+    
     h1, h2 {
         text-align: center;
     }
@@ -67,9 +64,9 @@ async def send_rag_ingest_event(file_path: Path) -> None:
     )
 
 
-st.title("Document Q&A Assistant")
+st.title("Document Q&A AI Assistant")
 uploaded = st.file_uploader(
-    "Upload or drag and drop a Document",
+    "Upload or drag & drop a Document",
     type=["pdf", "docx", "txt", "md"],
     accept_multiple_files=True,
 )
@@ -159,5 +156,4 @@ with st.form("rag_query_form"):
             for source in sources:
                 st.write(f"- {source}")
 
-# st.markdown("---")
-st.markdown('<div class="fixed-footer">© 2026</div>', unsafe_allow_html=True)
+st.markdown('<div class="fixed-footer">© 2026 Document Q&A AI Assistant</div>', unsafe_allow_html=True)

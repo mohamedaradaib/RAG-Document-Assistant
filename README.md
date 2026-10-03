@@ -59,7 +59,7 @@ uv run uvicorn main:app --reload --port 8000
 uv run streamlit run streamlit_app.py
 ```
 
-Open the Streamlit localhost URL - `http://localhost:8501`
+Open the Streamlit localhost URL - `http://localhost:8601`
 
 ## Live Demo
 
