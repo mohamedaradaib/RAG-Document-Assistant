@@ -16,8 +16,25 @@ st.markdown(
     """
     <style>
     #MainMenu,
-    [data-testid="stToolbar"] {
+    [data-testid="stToolbar"],
+    [data-testid="stHeaderActionElements"] {
         visibility: hidden !important;
+    }
+    h1, h2 {
+        text-align: center;
+    }
+    .block-container {
+        padding-bottom: 4rem;
+    }
+    .fixed-footer {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        padding: 0.75rem;
+        text-align: center;
+        background: var(--background-color);
+        z-index: 1000;
     }
     </style>
     """,
@@ -29,41 +46,40 @@ def get_inngest_client() -> inngest.Inngest:
     return inngest.Inngest(app_id="rag_app", is_production=False)
 
 
-def save_uploaded_pdf(file) -> Path:
+def save_uploaded_file(file) -> Path:
     uploads_dir = Path("uploads")
     uploads_dir.mkdir(parents=True, exist_ok=True)
-    file_path = uploads_dir / file.name
-    file_bytes = file.getbuffer()
-    file_path.write_bytes(file_bytes)
+    file_path = uploads_dir / Path(file.name).name
+    file_path.write_bytes(file.getbuffer())
     return file_path
 
 
-async def send_rag_ingest_event(pdf_path: Path) -> None:
+async def send_rag_ingest_event(file_path: Path) -> None:
     client = get_inngest_client()
     await client.send(
         inngest.Event(
             name="rag/ingest_pdf",
             data={
-                "pdf_path": str(pdf_path.resolve()),
-                "source_id": pdf_path.name,
+                "file_path": str(file_path.resolve()),
+                "source_id": file_path.name,
             },
         )
     )
 
 
-st.title("Upload PDF")
-uploaded = st.file_uploader("Upload a PDF", type=["pdf"], accept_multiple_files=False)
+st.title("Document Q&A Assistant")
+uploaded = st.file_uploader(
+    "Upload or drag and drop a Document",
+    type=["pdf", "docx", "txt", "md"],
+    accept_multiple_files=True,
+)
 
-if uploaded is not None:
+if uploaded:
     with st.spinner("Uploading and triggering ingestion..."):
-        path = save_uploaded_pdf(uploaded)
-        # Kick off the event and block until the send completes
-        asyncio.run(send_rag_ingest_event(path))
-        # Small pause for user feedback continuity
-        time.sleep(0.3)
-
-st.title("PDF Query")
-
+        for file in uploaded:
+            path = save_uploaded_file(file)
+            asyncio.run(send_rag_ingest_event(path))
+            time.sleep(0.3)
 
 async def send_rag_query_event(question: str, top_k: int) -> None:
     client = get_inngest_client()
@@ -113,22 +129,35 @@ def wait_for_run_output(event_id: str, timeout_s: float = 120.0, poll_interval_s
 
 with st.form("rag_query_form"):
     question = st.text_input("Question")
-    top_k = st.number_input("Text Segments", min_value=1, max_value=20, value=5, step=1)
-    submitted = st.form_submit_button("Ask")
+    text_to_find = st.text_input("Search")
+    ask_submitted = st.form_submit_button("Ask")
+    find_submitted = st.form_submit_button("Search")
 
-    if submitted and question.strip():
-        with st.spinner("Sending event and generating answer..."):
-            # Fire-and-forget event to Inngest for observability/workflow
-            event_id = asyncio.run(send_rag_query_event(question.strip(), int(top_k)))
-            # Poll the local Inngest API for the run's output
+    if ask_submitted and question.strip():
+        query = question.strip()
+        result_title = "Answer"
+    elif find_submitted and text_to_find.strip():
+        query = (
+            f'Find the exact text "{text_to_find.strip()}" in the uploaded documents. '
+            "Report matching passages and their sources."
+        )
+        result_title = "Text search results"
+    else:
+        query = None
+
+    if query:
+        with st.spinner("Searching..."):
+            event_id = asyncio.run(send_rag_query_event(query, 5))
             output = wait_for_run_output(event_id)
             answer = output.get("answer", "")
             sources = output.get("sources", [])
 
-        st.subheader("Answer")
-        st.write(answer or "(No answer)")
+        st.subheader(result_title)
+        st.write(answer or "(No results)")
         if sources:
             st.caption("Sources")
-            for s in sources:
-                st.write(f"- {s}")
+            for source in sources:
+                st.write(f"- {source}")
 
+# st.markdown("---")
+st.markdown('<div class="fixed-footer">© 2026</div>', unsafe_allow_html=True)

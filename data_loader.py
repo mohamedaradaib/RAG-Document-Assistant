@@ -2,6 +2,7 @@ from openai import OpenAI
 from llama_index.readers.file import PDFReader
 from llama_index.core.node_parser import SentenceSplitter
 from dotenv import load_dotenv
+from llama_index.core import SimpleDirectoryReader
 
 load_dotenv()
 
@@ -19,6 +20,13 @@ def load_and_chunk_pdf(path: str):
         chunks.extend(splitter.split_text(t))
     return chunks
 
+def load_and_chunk_file(path: str):
+    docs = SimpleDirectoryReader(input_files=[path]).load_data()
+    texts = [doc.text for doc in docs if getattr(doc, "text", None)]
+    chunks = []
+    for text in texts:
+        chunks.extend(splitter.split_text(text))
+    return chunks
 
 def embed_texts(texts: list[str]) -> list[list[float]]:
     response = client.embeddings.create(

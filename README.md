@@ -1,5 +1,5 @@
-# AI RAG Agent
-An Artificial Intelligence Retrieval-Augmented Generation Agent designed to transfer data into an interactive actionable knowledge base.
+# Document Q&A AI Assistant
+A Document Question and Answer Articial Intelligencse Assistant that uses Retrieval-Augmented Generation designed to transfer data into an interactive actionable knowledge base.
 
 ## Features
 - Upload PDFs and submit questions in the Streamlit app
@@ -37,7 +37,6 @@ cd AI-RAG-Agent
 1. Create a `.env` file in the project root and add your OpenAI key:
 ```env
 OPENAI_API_KEY=your_openai_api_key
-INNGEST_DEV=true
 ```
 
 2. Install the project dependencies:

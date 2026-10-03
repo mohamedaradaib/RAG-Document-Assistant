@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 import uuid
 import os
 import datetime
-from data_loader import load_and_chunk_pdf, embed_texts
+from data_loader import load_and_chunk_file, embed_texts
 from vector_db import QdrantStorage
 from custom_types import RAQQueryResult, RAGSearchResult, RAGUpsertResult, RAGChunkAndSrc
 
@@ -22,7 +22,7 @@ inngest_client = inngest.Inngest(
 
 @inngest_client.create_function(
     fn_id="RAG: Ingest PDF",
-    trigger=inngest.TriggerEvent(event="rag/ingest_pdf"),
+    trigger=inngest.TriggerEvent(event="rag/ingest_document"),
     throttle=inngest.Throttle(
         count=2, period=datetime.timedelta(minutes=1)
     ),
@@ -34,9 +34,9 @@ inngest_client = inngest.Inngest(
 )
 async def rag_ingest_pdf(ctx: inngest.Context):
     def _load(ctx: inngest.Context) -> RAGChunkAndSrc:
-        pdf_path = ctx.event.data["pdf_path"]
-        source_id = ctx.event.data.get("source_id", pdf_path)
-        chunks = load_and_chunk_pdf(pdf_path)
+        file_path = ctx.event.data["file_path"]
+        source_id = ctx.event.data.get("source_id", file_path)
+        chunks = load_and_chunk_file(file_path)
         return RAGChunkAndSrc(chunks=chunks, source_id=source_id)
 
     def _upsert(chunks_and_src: RAGChunkAndSrc) -> RAGUpsertResult:
