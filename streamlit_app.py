@@ -64,7 +64,7 @@ async def send_rag_ingest_event(file_path: Path) -> None:
     )
 
 
-st.title("Document Q&A AI Assistant")
+st.title("RAG Document Assistant")
 uploaded = st.file_uploader(
     "Upload or drag & drop a Document",
     type=["pdf", "docx", "txt", "md"],
@@ -156,4 +156,4 @@ with st.form("rag_query_form"):
             for source in sources:
                 st.write(f"- {source}")
 
-st.markdown('<div class="fixed-footer">© 2026 Document Q&A AI Assistant</div>', unsafe_allow_html=True)
+st.markdown('<div class="fixed-footer">© 2026 RAG Document Assistant</div>', unsafe_allow_html=True)
