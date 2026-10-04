@@ -1,16 +1,16 @@
-# Document Q&A AI Assistant
-A Document Question and Answer Articial Intelligencse Assistant that uses Retrieval-Augmented Generation designed to transfer data into an interactive actionable knowledge base.
+# RAG Document Assistant
+A Document Articial Intelligencse Assistant that uses Retrieval-Augmented Generation designed to transfer data into an interactive actionable knowledge base.
 
 ## Features
-- Upload PDFs and submit questions in the Streamlit app
-- Extract text from PDFs and split it into overlapping chunks
+- Upload Documents and submit questions in the Streamlit app
+- Extract text from Documents and split it into overlapping chunks
 - Create embeddings with OpenAI's `text-embedding-3-large` model
 - Store chunks in Qdrant and search for relevant passages
 - Include source names with search results
 - Use Inngest to send upload and question events
 
 ## How it Works
-This app lets users upload a PDF in Streamlit, processes the document into searchable text chunks, embeds those chunks with OpenAI, and stores them in Qdrant for semantic retrieval. When a question is asked, the app searches the most relevant chunks, uses them as context, and generates a grounded answer with source references so the response is based on the uploaded document content instead of general knowledge.
+This app lets users upload a Document in Streamlit, processes the document into searchable text chunks, embeds those chunks with OpenAI, and stores them in Qdrant for semantic retrieval. When a question is asked, the app searches the most relevant chunks, uses them as context, and generates a grounded answer with source references so the response is based on the uploaded document content instead of general knowledge.
 
 ## Tech Stack
 
