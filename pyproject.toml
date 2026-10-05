@@ -1,7 +1,7 @@
 [project]
-name = "ai-rag-agent"
+name = "rag-document-assistant"
 version = "0.1.0"
-description = "Add your description here"
+description = "RAG Document Assistant for local document Q&A workflows"
 readme = "README.md"
 authors = [
     { name = "Mohamed Aradaib", email = "mohamedaradaib1@gmail.com" }
@@ -19,8 +19,11 @@ dependencies = [
     "uvicorn>=0.52.1",
 ]
 
+[tool.uv]
+package = false
+
 [project.scripts]
-ai-rag-agent = "main:main"
+rag-document-assistant = "main:main"
 
 [build-system]
 requires = ["uv_build>=0.12.0,<0.13.0"]

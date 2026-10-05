@@ -1,4 +1,5 @@
 import asyncio
+import hashlib
 from pathlib import Path
 import time
 
@@ -8,15 +9,54 @@ from dotenv import load_dotenv
 import os
 import requests
 
+from vector_db import QdrantStorage
+
 load_dotenv()
 
-st.set_page_config(page_title="localhost", page_icon="", layout="wide")
+st.set_page_config(page_title="RAG Document Assistant", page_icon="", layout="wide")
 
 st.markdown(
     """
     <style>
-    #MainMenu,
-    
+    html, body, .stApp, [data-testid="stAppViewContainer"] {
+        background-color: #000 !important;
+        color: #fff;
+    }
+    [data-testid="stHeader"] {
+        background-color: #000;
+    }
+    [data-testid="stBaseButton-header"] {
+        display: none;
+    }
+    [data-testid="stFileUploaderDropzone"] {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    [data-testid="stFileUploaderDropzoneInstructions"] {
+        display: flex;
+        flex: 1;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        min-width: 0;
+    }
+    [data-testid="stFileUploaderDropzoneInstructions"]::before {
+        # content: "Upload or drag & drop a document";
+        color: #fff;
+        white-space: nowrap;
+    }
+    @media (max-width: 700px) {
+        [data-testid="stFileUploaderDropzone"] {
+            flex-wrap: wrap;
+        }
+        [data-testid="stFileUploaderDropzoneInstructions"] {
+            flex-wrap: wrap;
+        }
+        [data-testid="stFileUploaderDropzoneInstructions"]::before {
+            white-space: normal;
+        }
+    }
     h1, h2 {
         text-align: center;
     }
@@ -28,9 +68,11 @@ st.markdown(
         bottom: 0;
         left: 0;
         width: 100%;
+        box-sizing: border-box;
         padding: 0.75rem;
         text-align: center;
-        background: var(--background-color);
+        background: #000;
+        color: #fff;
         z-index: 1000;
     }
     </style>
@@ -51,42 +93,41 @@ def save_uploaded_file(file) -> Path:
     return file_path
 
 
-async def send_rag_ingest_event(file_path: Path) -> None:
+async def send_rag_ingest_event(file_path: Path) -> str:
     client = get_inngest_client()
-    await client.send(
+    result = await client.send(
         inngest.Event(
-            name="rag/ingest_pdf",
+            name="rag/ingest_document",
             data={
                 "file_path": str(file_path.resolve()),
                 "source_id": file_path.name,
             },
         )
     )
+    return result[0]
 
 
 st.title("RAG Document Assistant")
 uploaded = st.file_uploader(
-    "Upload or drag & drop a Document",
-    type=["pdf", "docx", "txt", "md"],
+    "",
+    label_visibility="collapsed",
+    type=["pdf", "docx", "html", "htm", "txt", "md"],
     accept_multiple_files=True,
 )
 
-if uploaded:
-    with st.spinner("Uploading and triggering ingestion..."):
-        for file in uploaded:
-            path = save_uploaded_file(file)
-            asyncio.run(send_rag_ingest_event(path))
-            time.sleep(0.3)
-
-async def send_rag_query_event(question: str, top_k: int) -> None:
+async def send_rag_query_event(question: str, top_k: int, chat_history: list[dict] | None = None) -> None:
     client = get_inngest_client()
+    payload = {
+        "question": question,
+        "top_k": top_k,
+    }
+    if chat_history:
+        payload["chat_history"] = chat_history
+
     result = await client.send(
         inngest.Event(
             name="rag/query_pdf_ai",
-            data={
-                "question": question,
-                "top_k": top_k,
-            },
+            data=payload,
         )
     )
 
@@ -118,42 +159,93 @@ def wait_for_run_output(event_id: str, timeout_s: float = 120.0, poll_interval_s
             if status in ("Completed", "Succeeded", "Success", "Finished"):
                 return run.get("output") or {}
             if status in ("Failed", "Cancelled"):
-                raise RuntimeError(f"Function run {status}")
+                failure_reason = run.get("error") or run.get("output") or "Function run failed"
+                raise RuntimeError(str(failure_reason))
         if time.time() - start > timeout_s:
             raise TimeoutError(f"Timed out waiting for run output (last status: {last_status})")
         time.sleep(poll_interval_s)
 
 
-with st.form("rag_query_form"):
-    question = st.text_input("Question")
-    text_to_find = st.text_input("Search")
-    ask_submitted = st.form_submit_button("Ask")
-    find_submitted = st.form_submit_button("Search")
+if "processed_uploads" not in st.session_state:
+    st.session_state.processed_uploads = set()
 
-    if ask_submitted and question.strip():
-        query = question.strip()
-        result_title = "Answer"
-    elif find_submitted and text_to_find.strip():
-        query = (
-            f'Find the exact text "{text_to_find.strip()}" in the uploaded documents. '
-            "Report matching passages and their sources."
-        )
-        result_title = "Text search results"
-    else:
-        query = None
+if not uploaded:
+    st.session_state.processed_uploads.clear()
+else:
+    for file in uploaded:
+        fingerprint = (file.name, hashlib.sha256(file.getvalue()).hexdigest())
+        if fingerprint in st.session_state.processed_uploads:
+            continue
 
-    if query:
-        with st.spinner("Searching..."):
-            event_id = asyncio.run(send_rag_query_event(query, 5))
+        path = save_uploaded_file(file)
+        with st.spinner(f"Processing {file.name}..."):
+            event_id = asyncio.run(send_rag_ingest_event(path))
             output = wait_for_run_output(event_id)
-            answer = output.get("answer", "")
-            sources = output.get("sources", [])
+        st.session_state.processed_uploads.add(fingerprint)
+        st.success(f"Processed {file.name}: {output.get('ingested', 0)} chunks.")
 
-        st.subheader(result_title)
-        st.write(answer or "(No results)")
-        if sources:
-            st.caption("Sources")
-            for source in sources:
-                st.write(f"- {source}")
+
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+
+st.sidebar.header("Indexed documents")
+try:
+    indexed_sources = sorted(QdrantStorage().list_sources())
+except Exception:
+    indexed_sources = []
+
+if indexed_sources:
+    for source in indexed_sources:
+        col1, col2 = st.sidebar.columns([4, 1])
+        col1.write(source)
+        if col2.button("Delete", key=f"delete_{source}", help=f"Remove {source} from the vector index"):
+            try:
+                QdrantStorage().delete_source(source)
+                st.sidebar.success(f"Removed {source}")
+                st.rerun()
+            except Exception as exc:
+                st.sidebar.error(f"Couldn't remove {source}: {exc}")
+else:
+    st.sidebar.caption("No documents indexed yet.")
+
+for message in st.session_state.messages:
+    with st.chat_message(message["role"]):
+        st.markdown(message["content"])
+        if message.get("sources"):
+            with st.expander("Sources"):
+                for source in message["sources"]:
+                    st.write(f"- {source}")
+
+prompt = st.chat_input("Ask about your documents")
+if prompt:
+    st.session_state.messages.append({"role": "user", "content": prompt})
+    conversation_history = [
+        {"role": msg["role"], "content": msg["content"]}
+        for msg in st.session_state.messages[:-1]
+        if msg["role"] in {"user", "assistant"}
+    ]
+
+    with st.chat_message("user"):
+        st.markdown(prompt)
+
+    with st.spinner("Searching..."):
+        try:
+            event_id = asyncio.run(send_rag_query_event(prompt, 5, conversation_history))
+            output = wait_for_run_output(event_id)
+        except Exception as exc:
+            output = {"answer": f"The AI service is currently unavailable: {exc}", "sources": []}
+
+        answer = output.get("answer", "")
+        sources = output.get("sources", [])
+
+    assistant_message = {"role": "assistant", "content": answer or "I couldn't find relevant information in the uploaded documents.", "sources": sources}
+    st.session_state.messages.append(assistant_message)
+
+    with st.chat_message("assistant"):
+        st.markdown(assistant_message["content"])
+        if assistant_message["sources"]:
+            with st.expander("Sources"):
+                for source in assistant_message["sources"]:
+                    st.write(f"- {source}")
 
 st.markdown('<div class="fixed-footer">© 2026 RAG Document Assistant</div>', unsafe_allow_html=True)

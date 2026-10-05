@@ -3,35 +3,6 @@ revision = 3
 requires-python = ">=3.14"
 
 [[package]]
-name = "ai-rag-agent"
-version = "0.1.0"
-source = { editable = "." }
-dependencies = [
-    { name = "fastapi" },
-    { name = "inngest" },
-    { name = "llama-index-core" },
-    { name = "llama-index-readers-file" },
-    { name = "openai" },
-    { name = "python-dotenv" },
-    { name = "qdrant-client" },
-    { name = "streamlit" },
-    { name = "uvicorn" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "fastapi", specifier = ">=0.141.1" },
-    { name = "inngest", specifier = ">=0.5.19" },
-    { name = "llama-index-core", specifier = ">=0.14.23" },
-    { name = "llama-index-readers-file", specifier = ">=0.6.0" },
-    { name = "openai", specifier = ">=2.53.0" },
-    { name = "python-dotenv", specifier = ">=1.2.2" },
-    { name = "qdrant-client", specifier = ">=1.19.0" },
-    { name = "streamlit", specifier = ">=1.61.1" },
-    { name = "uvicorn", specifier = ">=0.52.1" },
-]
-
-[[package]]
 name = "aiohappyeyeballs"
 version = "2.7.1"
 source = { registry = "https://pypi.org/simple" }
@@ -1588,6 +1559,35 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/4e/20/c8fcd645d3f595b086fa11a085980e9f641fd56fc6221fb325d634b8c4fa/qdrant_client-1.19.1.tar.gz", hash = "sha256:8f1d851a8463ce8cc11cf39ed8a9c9fb4b5f9de60e9a096ff56da42d1f074907", size = 360625, upload-time = "2026-09-16T06:43:13.818Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/d0/9f/becebdda02beddd422587eba0d7dfac5b1f1e0aa1ada5bcf9b9e6f1c3717/qdrant_client-1.19.1-py3-none-any.whl", hash = "sha256:fca1a96c3f90f5fff853f6ee6877838a5768a04c963df9891a655a63313af8a0", size = 406533, upload-time = "2026-09-16T06:43:12.428Z" },
+]
+
+[[package]]
+name = "rag-document-assistant"
+version = "0.1.0"
+source = { virtual = "." }
+dependencies = [
+    { name = "fastapi" },
+    { name = "inngest" },
+    { name = "llama-index-core" },
+    { name = "llama-index-readers-file" },
+    { name = "openai" },
+    { name = "python-dotenv" },
+    { name = "qdrant-client" },
+    { name = "streamlit" },
+    { name = "uvicorn" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "fastapi", specifier = ">=0.141.1" },
+    { name = "inngest", specifier = ">=0.5.19" },
+    { name = "llama-index-core", specifier = ">=0.14.23" },
+    { name = "llama-index-readers-file", specifier = ">=0.6.0" },
+    { name = "openai", specifier = ">=2.53.0" },
+    { name = "python-dotenv", specifier = ">=1.2.2" },
+    { name = "qdrant-client", specifier = ">=1.19.0" },
+    { name = "streamlit", specifier = ">=1.61.1" },
+    { name = "uvicorn", specifier = ">=0.52.1" },
 ]
 
 [[package]]

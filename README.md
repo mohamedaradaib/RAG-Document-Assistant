@@ -1,67 +1,99 @@
 # RAG Document Assistant
-A Document Articial Intelligencse Assistant that uses Retrieval-Augmented Generation designed to transfer data into an interactive actionable knowledge base.
+
+An Aritifical Intelligence Document Assistant that utilizes Retrieval-Augmented Generation and lets you upload documents, index the contents in a vector database, and ask grounded questions about them using OpenAI models.
 
 ## Features
-- Upload Documents and submit questions in the Streamlit app
-- Extract text from Documents and split it into overlapping chunks
-- Create embeddings with OpenAI's `text-embedding-3-large` model
-- Store chunks in Qdrant and search for relevant passages
-- Include source names with search results
-- Use Inngest to send upload and question events
 
-## How it Works
-This app lets users upload a Document in Streamlit, processes the document into searchable text chunks, embeds those chunks with OpenAI, and stores them in Qdrant for semantic retrieval. When a question is asked, the app searches the most relevant chunks, uses them as context, and generates a grounded answer with source references so the response is based on the uploaded document content instead of general knowledge.
+- Upload multiple files in supported formats: PDF, DOCX, HTML, TXT, and Markdown
+- Extract text and split large documents into overlapping chunks
+- Generate embeddings with the OpenAI `text-embedding-3-large` model
+- Store chunks in a Qdrant collection keyed by document source
+- Search using hybrid ranking: vector similarity plus lexical overlap
+- Keep recent chat history for follow-up questions
+- Display source document names with responses
+- Delete individual indexed documents from the sidebar
+- Run ingestion and query flows asynchronously through Inngest
 
-## Tech Stack
+## How it works
+
+Users upload documents in the Streamlit app, and the backend ingests them through a FastAPI/Inngest workflow that splits each file into chunks, embeds them with OpenAI, and stores them in Qdrant for retrieval. When a question is asked, the system embeds the query, searches the indexed chunks for the most relevant passages, and passes that grounded context to the LLM to generate an answer tied to the uploaded documents.
+
+## Tech stack
 
 - Python
-- FastAPI
-- LlamaIndex
-- Qdrant
 - Streamlit
+- FastAPI
 - Inngest
-- OpenAI
+- Qdrant
+- OpenAI API
+- LlamaIndex
 
 ## Getting Started
 ### Prerequisites
-- OpenAI API Key
+
+- OpenAI API key
 
 ### Installation
-1. Clone the repository
+
+#### 1) Clone the repository
+
 ```bash
-git clone https://github.com/mohamedaradaib/AI-RAG-Agent.git
-cd AI-RAG-Agent
+git clone https://github.com/mohamedaradaib/rag-document-assistant.git
+cd rag-document-assistant
 ```
 
-### Run the Application
-1. Create a `.env` file in the project root and add your OpenAI key:
+#### 2) Create an environment file
+
+Create a `.env` file in the project root:
+
 ```env
 OPENAI_API_KEY=your_openai_api_key
 ```
 
-2. Install the project dependencies:
+#### 3) Install dependencies
+
 ```bash
 uv sync
 ```
 
-3. Start the Inngest Dev Server in a terminal:
+#### 4) Start Qdrant
+
+```bash
+docker compose up -d
+```
+
+#### 5) Start Inngest
+
+In a separate terminal:
+
 ```bash
 npx inngest-cli@latest dev
 ```
 
-4. Start the FastAPI application in a second terminal:
+#### 6) Start the FastAPI app
+
+In another seperate terminal:
+
 ```bash
 uv run uvicorn main:app --reload --port 8000
 ```
 
-5. Start Streamlit in a third terminal:
+#### 7) Start the Streamlit UI
+
+In another seperate terminal:
+
 ```bash
 uv run streamlit run streamlit_app.py
 ```
 
-Open the Streamlit localhost URL - `http://localhost:8601`
+Then open:
+
+```text
+http://localhost:8601
+```
 
 ## Live Demo
 
 ## License
-[LICENSE](./LICENSE) 
+
+[LICENSE](LICENSE)
