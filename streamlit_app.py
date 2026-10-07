@@ -1,7 +1,7 @@
 import asyncio
 import hashlib
-from pathlib import Path
 import time
+from urllib.parse import quote
 
 import streamlit as st
 import inngest
@@ -82,29 +82,25 @@ st.markdown(
 
 @st.cache_resource
 def get_inngest_client() -> inngest.Inngest:
-    return inngest.Inngest(app_id="rag_app", is_production=False)
+    is_production = os.getenv("INNGEST_IS_PRODUCTION", "false").lower() == "true"
+    return inngest.Inngest(app_id="rag_app", is_production=is_production)
 
 
-def save_uploaded_file(file) -> Path:
-    uploads_dir = Path("uploads")
-    uploads_dir.mkdir(parents=True, exist_ok=True)
-    file_path = uploads_dir / Path(file.name).name
-    file_path.write_bytes(file.getbuffer())
-    return file_path
+def upload_document(file) -> str:
+    api_base = os.getenv("API_BASE_URL", "http://127.0.0.1:8000").rstrip("/")
+    headers = {"X-File-Name": quote(file.name, safe="")}
+    api_token = os.getenv("APP_API_TOKEN")
+    if api_token:
+        headers["Authorization"] = f"Bearer {api_token}"
 
-
-async def send_rag_ingest_event(file_path: Path) -> str:
-    client = get_inngest_client()
-    result = await client.send(
-        inngest.Event(
-            name="rag/ingest_document",
-            data={
-                "file_path": str(file_path.resolve()),
-                "source_id": file_path.name,
-            },
-        )
+    response = requests.post(
+        f"{api_base}/upload",
+        data=file.getvalue(),
+        headers=headers,
+        timeout=120,
     )
-    return result[0]
+    response.raise_for_status()
+    return response.json()["event_id"]
 
 
 st.title("RAG Document Assistant")
@@ -135,13 +131,16 @@ async def send_rag_query_event(question: str, top_k: int, chat_history: list[dic
 
 
 def _inngest_api_base() -> str:
-    # Local dev server default; configurable via env
-    return os.getenv("INNGEST_API_BASE", "http://127.0.0.1:8288/v1")
+    is_production = os.getenv("INNGEST_IS_PRODUCTION", "false").lower() == "true"
+    default = "https://api.inngest.com/v1" if is_production else "http://127.0.0.1:8288/v1"
+    return os.getenv("INNGEST_API_BASE", default).rstrip("/")
 
 
 def fetch_runs(event_id: str) -> list[dict]:
     url = f"{_inngest_api_base()}/events/{event_id}/runs"
-    resp = requests.get(url)
+    api_key = os.getenv("INNGEST_API_KEY")
+    headers = {"Authorization": f"Bearer {api_key}"} if api_key else {}
+    resp = requests.get(url, headers=headers, timeout=10)
     resp.raise_for_status()
     data = resp.json()
     return data.get("data", [])
@@ -177,9 +176,8 @@ else:
         if fingerprint in st.session_state.processed_uploads:
             continue
 
-        path = save_uploaded_file(file)
         with st.spinner(f"Processing {file.name}..."):
-            event_id = asyncio.run(send_rag_ingest_event(path))
+            event_id = upload_document(file)
             output = wait_for_run_output(event_id)
         st.session_state.processed_uploads.add(fingerprint)
         st.success(f"Processed {file.name}: {output.get('ingested', 0)} chunks.")

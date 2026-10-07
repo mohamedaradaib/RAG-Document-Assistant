@@ -1,3 +1,4 @@
+import os
 import re
 from collections import Counter
 
@@ -22,8 +23,13 @@ def lexical_overlap_score(query_text: str, document_text: str) -> float:
 
 
 class QdrantStorage:
-    def __init__(self, url="http://localhost:6333", collection="docs", dim=3072, client=None):
-        self.client = client or QdrantClient(url=url, timeout=30)
+    def __init__(self, url=None, collection="docs", dim=3072, client=None):
+        qdrant_url = url or os.getenv("QDRANT_URL", "http://localhost:6333")
+        self.client = client or QdrantClient(
+            url=qdrant_url,
+            api_key=os.getenv("QDRANT_API_KEY"),
+            timeout=30,
+        )
         self.collection = collection
         self.dim = dim
         if not self.client.collection_exists(self.collection):

@@ -1,5 +1,9 @@
 import logging
-from fastapi import FastAPI
+import secrets
+from pathlib import Path
+from urllib.parse import unquote
+
+from fastapi import FastAPI, HTTPException, Request
 import inngest
 import inngest.fast_api
 from inngest.experimental import ai
@@ -27,7 +31,7 @@ def _friendly_openai_error(exc: Exception) -> str:
 inngest_client = inngest.Inngest(
     app_id="rag_app",
     logger=logging.getLogger("uvicorn"),
-    is_production=False,
+    is_production=os.getenv("INNGEST_IS_PRODUCTION", "false").lower() == "true",
     serializer=inngest.PydanticSerializer()
 )
 
@@ -63,6 +67,10 @@ async def rag_ingest_pdf(ctx: inngest.Context):
             return RAGUpsertResult(ingested=0, error=_friendly_openai_error(exc))
 
     chunks_and_src = await ctx.step.run("load-and-chunk", lambda: _load(ctx), output_type=RAGChunkAndSrc)
+    try:
+        Path(ctx.event.data["file_path"]).unlink(missing_ok=True)
+    except OSError:
+        logging.getLogger("uvicorn").warning("Could not remove uploaded file")
     ingested = await ctx.step.run("embed-and-upsert", lambda: _upsert(chunks_and_src), output_type=RAGUpsertResult)
     return ingested.model_dump()
 
@@ -135,5 +143,44 @@ async def rag_query_pdf_ai(ctx: inngest.Context):
         }
 
 app = FastAPI()
+
+
+@app.post("/upload")
+async def upload_document(request: Request):
+    api_token = os.getenv("APP_API_TOKEN")
+    is_production = os.getenv("INNGEST_IS_PRODUCTION", "false").lower() == "true"
+    if is_production and not api_token:
+        raise HTTPException(status_code=503, detail="APP_API_TOKEN is not configured")
+    if api_token and not secrets.compare_digest(
+        request.headers.get("authorization", ""), f"Bearer {api_token}"
+    ):
+        raise HTTPException(status_code=401, detail="Unauthorized")
+
+    filename = Path(unquote(request.headers.get("x-file-name", "")).replace("\\", "/")).name
+    if not filename or filename in {".", ".."}:
+        raise HTTPException(status_code=400, detail="A valid file name is required")
+
+    contents = await request.body()
+    if not contents:
+        raise HTTPException(status_code=400, detail="The uploaded file is empty")
+
+    upload_dir = Path(os.getenv("UPLOAD_DIR", "uploads"))
+    upload_dir.mkdir(parents=True, exist_ok=True)
+    file_path = upload_dir / f"{uuid.uuid4().hex}-{filename}"
+    file_path.write_bytes(contents)
+
+    try:
+        result = await inngest_client.send(
+            inngest.Event(
+                name="rag/ingest_document",
+                data={"file_path": str(file_path.resolve()), "source_id": filename},
+            )
+        )
+    except Exception:
+        file_path.unlink(missing_ok=True)
+        raise
+
+    return {"event_id": result[0]}
+
 
 inngest.fast_api.serve(app, inngest_client, [rag_ingest_pdf, rag_query_pdf_ai])
