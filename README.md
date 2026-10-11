@@ -94,6 +94,8 @@ http://localhost:8601
 
 ## Live Demo
 
+## Screenshots
+
 ## License
 
 [LICENSE](LICENSE)
