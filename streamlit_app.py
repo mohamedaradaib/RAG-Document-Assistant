@@ -18,50 +18,138 @@ st.set_page_config(page_title="RAG Document Assistant", page_icon="", layout="wi
 st.markdown(
     """
     <style>
-    html, body, .stApp, [data-testid="stAppViewContainer"] {
-        background-color: #000 !important;
-        color: #fff;
+    #MainMenu,
+    [data-testid="stToolbar"],
+    [data-testid="stHeaderActionElements"] {
+        visibility: hidden !important;
+    }
+    :root {
+        --gray-950: #191b1d;
+        --gray-900: #202224;
+        --gray-800: #292c2f;
+        --gray-700: #2b2f36;
+        --gray-600: #3a3f46;
+        --gray-500: #6b7280;
+        --gray-300: #d1d5db;
+        --gray-100: #f3f4f6;
+    }
+    html, body, [data-testid="stAppViewContainer"], .stApp, section.main, .main {
+        background: var(--gray-700) !important;
+        color: var(--gray-100) !important;
+    }
+    .block-container {
+        padding-top: 2rem;
+        padding-bottom: 4rem;
+        background: var(--gray-700) !important;
     }
     [data-testid="stHeader"] {
-        background-color: #000;
+        background: var(--gray-950) !important;
+        border-bottom: none !important;
     }
-    [data-testid="stBaseButton-header"] {
-        display: none;
+    [data-testid="stPopover"] {
+        position: fixed !important;
+        top: 0.625rem;
+        right: 1.25rem;
+        width: max-content !important;
+        z-index: 1000000;
+    }
+    [data-testid="stPopoverButton"] {
+        background: var(--gray-950) !important;
+        color: var(--gray-100) !important;
+        border: 1px solid rgba(209, 213, 219, 0.18) !important;
+        border-radius: 10px !important;
+    }
+    [data-testid="stPopoverButton"]:hover {
+        background: var(--gray-800) !important;
+        border-color: rgba(209, 213, 219, 0.36) !important;
+    }
+    [data-testid="stSidebar"] {
+        background: var(--gray-900) !important;
+        color: var(--gray-100) !important;
+    }
+    [data-testid="stSidebar"] * {
+        color: var(--gray-100) !important;
+    }
+    [data-testid="stFileUploader"] {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    [data-testid="stFileUploader"] > label,
+    .stTextInput > label,
+    .stTextArea > label,
+    .stSlider > label,
+    .stSelectbox > label,
+    .stNumberInput > label,
+    p, label, div, span, li, a, button, input, textarea {
+        color: var(--gray-100) !important;
     }
     [data-testid="stFileUploaderDropzone"] {
+        width: min(100%, 15rem);
+        aspect-ratio: 1;
+        min-height: 0 !important;
+        margin: 0 auto;
+        padding: 1rem;
+        gap: 0.75rem;
+        box-sizing: border-box;
         display: flex;
+        flex-direction: column;
         align-items: center;
-        gap: 1rem;
+        justify-content: center;
+        border: 1.5px dashed rgba(209, 213, 219, 0.4);
+        border-radius: 16px;
+        background: var(--gray-900) !important;
+        box-shadow: inset 0 0 0 1px rgba(180, 180, 180, 0.12);
     }
     [data-testid="stFileUploaderDropzoneInstructions"] {
-        display: flex;
-        flex: 1;
-        align-items: center;
-        justify-content: space-between;
-        gap: 1rem;
-        min-width: 0;
+        display: none !important;
     }
-    [data-testid="stFileUploaderDropzoneInstructions"]::before {
-        # content: "Upload or drag & drop a document";
-        color: #fff;
-        white-space: nowrap;
+    [data-testid="stFileUploaderDropzone"] button,
+    .stButton > button,
+    [data-testid="stFormSubmitButton"] button {
+        background: var(--gray-950) !important;
+        color: var(--gray-100) !important;
+        border: 1px solid rgba(209, 213, 219, 0.18) !important;
+        border-radius: 10px !important;
+        font-weight: 600;
+        padding: 0.6rem 1.1rem;
     }
-    @media (max-width: 700px) {
-        [data-testid="stFileUploaderDropzone"] {
-            flex-wrap: wrap;
-        }
-        [data-testid="stFileUploaderDropzoneInstructions"] {
-            flex-wrap: wrap;
-        }
-        [data-testid="stFileUploaderDropzoneInstructions"]::before {
-            white-space: normal;
-        }
+    [data-testid="stFileUploaderDropzone"] button:hover,
+    .stButton > button:hover,
+    [data-testid="stFormSubmitButton"] button:hover {
+        background: var(--gray-800) !important;
+        border-color: rgba(209, 213, 219, 0.36) !important;
+    }
+    .stTextInput input,
+    .stTextArea textarea,
+    .stSelectbox select,
+    .stNumberInput input {
+        background: var(--gray-900) !important;
+        color: var(--gray-100) !important;
+        border: 1px solid rgba(209, 213, 219, 0.2) !important;
+        border-radius: 10px;
+    }
+    .stTextInput input::placeholder,
+    .stTextArea textarea::placeholder {
+        color: rgba(209, 213, 219, 0.7) !important;
+    }
+    [data-testid="stSlider"] [data-rac][data-orientation="horizontal"] > div[data-rac] > div:first-child {
+        background: var(--gray-100) !important;
+    }
+    [data-testid="stSlider"] [data-rac][data-orientation="horizontal"] > div[data-rac] > div[data-rac] {
+        background: var(--gray-100) !important;
+        border: 2px solid var(--gray-900) !important;
     }
     h1, h2 {
         text-align: center;
     }
-    .block-container {
-        padding-bottom: 4rem;
+    h1 {
+        font-size: 1.5rem;
+        line-height: 1.2;
+        letter-spacing: 0;
+        font-weight: 700;
+        margin: 0 0 1rem 0;
+        color: var(--gray-100);
     }
     .fixed-footer {
         position: fixed;
@@ -71,8 +159,10 @@ st.markdown(
         box-sizing: border-box;
         padding: 0.75rem;
         text-align: center;
-        background: #000;
-        color: #fff;
+        font-size: 0.8rem;
+        color: var(--gray-300);
+        background: var(--gray-950);
+        border-top: 1px solid rgba(209, 213, 219, 0.12);
         z-index: 1000;
     }
     </style>
@@ -103,10 +193,9 @@ def upload_document(file) -> str:
     return response.json()["event_id"]
 
 
-st.title("RAG Document Assistant")
+header_slot = st.empty()
 uploaded = st.file_uploader(
-    "",
-    label_visibility="collapsed",
+    "Upload or drag and drop a Document",
     type=["pdf", "docx", "html", "htm", "txt", "md"],
     accept_multiple_files=True,
 )
@@ -182,29 +271,34 @@ else:
         st.session_state.processed_uploads.add(fingerprint)
         st.success(f"Processed {file.name}: {output.get('ingested', 0)} chunks.")
 
+with header_slot.container():
+    _, title_column, documents_column = st.columns([1, 2, 1])
+    with title_column:
+        st.title("RAG Document Assistant")
+    with documents_column:
+        with st.popover("Indexed documents", use_container_width=True):
+            try:
+                indexed_sources = sorted(QdrantStorage().list_sources())
+            except Exception:
+                indexed_sources = []
+
+            if indexed_sources:
+                for source in indexed_sources:
+                    source_column, delete_column = st.columns([4, 1])
+                    source_column.write(source)
+                    if delete_column.button("Delete", key=f"delete_{source}", help=f"Remove {source} from the vector index"):
+                        try:
+                            QdrantStorage().delete_source(source)
+                            st.success(f"Removed {source}")
+                            st.rerun()
+                        except Exception as exc:
+                            st.error(f"Couldn't remove {source}: {exc}")
+            else:
+                st.caption("No documents indexed yet.")
+
 
 if "messages" not in st.session_state:
     st.session_state.messages = []
-
-st.sidebar.header("Indexed documents")
-try:
-    indexed_sources = sorted(QdrantStorage().list_sources())
-except Exception:
-    indexed_sources = []
-
-if indexed_sources:
-    for source in indexed_sources:
-        col1, col2 = st.sidebar.columns([4, 1])
-        col1.write(source)
-        if col2.button("Delete", key=f"delete_{source}", help=f"Remove {source} from the vector index"):
-            try:
-                QdrantStorage().delete_source(source)
-                st.sidebar.success(f"Removed {source}")
-                st.rerun()
-            except Exception as exc:
-                st.sidebar.error(f"Couldn't remove {source}: {exc}")
-else:
-    st.sidebar.caption("No documents indexed yet.")
 
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
@@ -214,8 +308,30 @@ for message in st.session_state.messages:
                 for source in message["sources"]:
                     st.write(f"- {source}")
 
-prompt = st.chat_input("Ask about your documents")
-if prompt:
+with st.form("rag_query_form"):
+    question = st.text_input("Question")
+    text_to_find = st.text_input("Search")
+    top_k = st.slider("Retrieval depth", min_value=1, max_value=10, value=5, step=1)
+    col_ask, col_find = st.columns([1, 1])
+    with col_ask:
+        ask_submitted = st.form_submit_button("Ask", use_container_width=True)
+    with col_find:
+        find_submitted = st.form_submit_button("Search", use_container_width=True)
+
+if ask_submitted and question.strip():
+    prompt = question.strip()
+    query = prompt
+elif find_submitted and text_to_find.strip():
+    prompt = text_to_find.strip()
+    query = (
+        f'Find the exact text "{prompt}" in the uploaded documents. '
+        "Report matching passages and their sources."
+    )
+else:
+    prompt = None
+    query = None
+
+if query:
     st.session_state.messages.append({"role": "user", "content": prompt})
     conversation_history = [
         {"role": msg["role"], "content": msg["content"]}
@@ -228,7 +344,7 @@ if prompt:
 
     with st.spinner("Searching..."):
         try:
-            event_id = asyncio.run(send_rag_query_event(prompt, 5, conversation_history))
+            event_id = asyncio.run(send_rag_query_event(query, top_k, conversation_history))
             output = wait_for_run_output(event_id)
         except Exception as exc:
             output = {"answer": f"The AI service is currently unavailable: {exc}", "sources": []}
@@ -246,4 +362,4 @@ if prompt:
                 for source in assistant_message["sources"]:
                     st.write(f"- {source}")
 
-st.markdown('<div class="fixed-footer">© 2026 RAG Document Assistant</div>', unsafe_allow_html=True)
+st.markdown('<div class="fixed-footer">© 2026 RAG Document Assistant | About | Terms of Service | Privacy Policy | Security | Disclosure</div>', unsafe_allow_html=True)
