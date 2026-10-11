@@ -140,6 +140,11 @@ st.markdown(
         background: var(--gray-100) !important;
         border: 2px solid var(--gray-900) !important;
     }
+    [data-testid="stSlider"] [data-rac][data-orientation="horizontal"] > div[data-rac] > div[data-rac]:active,
+    [data-testid="stSlider"] [data-rac][data-orientation="horizontal"] > div[data-rac] > div[data-rac]:focus-within {
+        background: var(--gray-600) !important;
+        box-shadow: 0 0 0 3px rgba(58, 63, 70, 0.55) !important;
+    }
     h1, h2 {
         text-align: center;
     }
@@ -276,7 +281,7 @@ with header_slot.container():
     with title_column:
         st.title("RAG Document Assistant")
     with documents_column:
-        with st.popover("Indexed documents", use_container_width=True):
+        with st.popover("Documents", use_container_width=True):
             try:
                 indexed_sources = sorted(QdrantStorage().list_sources())
             except Exception:
