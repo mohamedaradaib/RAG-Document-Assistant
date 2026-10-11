@@ -93,8 +93,10 @@ http://localhost:8601
 ```
 
 ## Live Demo
+https://rag-document-assistant-production-443d.up.railway.app/
 
 ## Screenshots
+![alt text](image.png)
 
 ## License
 
