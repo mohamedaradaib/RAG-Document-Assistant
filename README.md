@@ -86,7 +86,7 @@ In another seperate terminal:
 uv run streamlit run streamlit_app.py
 ```
 
-Then open:
+Then open localhost:
 
 ```text
 http://localhost:8601
