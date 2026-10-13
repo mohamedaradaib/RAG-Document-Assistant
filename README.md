@@ -89,7 +89,7 @@ uv run streamlit run streamlit_app.py
 Then open streamlit localhost url:
 
 ```text
-http://localhost:8601
+http://localhost:8501
 ```
 
 ## Live Demo
