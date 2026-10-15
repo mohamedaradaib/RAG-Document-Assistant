@@ -320,7 +320,7 @@ for message in st.session_state.messages:
 with st.form("rag_query_form"):
     question = st.text_input("Question")
     text_to_find = st.text_input("Search")
-    top_k = st.slider("Retrieval depth", min_value=1, max_value=10, value=5, step=1)
+    top_k = st.slider("Retrieval depth", min_value=1, max_value=10, value=1, step=1)
     col_ask, col_find = st.columns([1, 1])
     with col_ask:
         ask_submitted = st.form_submit_button("Ask", use_container_width=True)
