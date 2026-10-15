@@ -3,7 +3,7 @@ import re
 from collections import Counter
 
 from qdrant_client import QdrantClient
-from qdrant_client.models import VectorParams, Distance, PointStruct, Filter, FieldCondition, MatchValue
+from qdrant_client.models import VectorParams, Distance, PointStruct, Filter, FieldCondition, MatchValue, PayloadSchemaType
 
 
 def lexical_overlap_score(query_text: str, document_text: str) -> float:
@@ -37,6 +37,13 @@ class QdrantStorage:
                 collection_name=self.collection,
                 vectors_config=VectorParams(size=dim, distance=Distance.COSINE),
             )
+        payload_schema = self.client.get_collection(self.collection).payload_schema or {}
+        if "source" not in payload_schema:
+            self.client.create_payload_index(
+                collection_name=self.collection,
+                field_name="source",
+                field_schema=PayloadSchemaType.KEYWORD,
+            )
 
     def upsert(self, ids, vectors, payloads):
         points = [PointStruct(id=ids[i], vector=vectors[i], payload=payloads[i]) for i in range(len(ids))]
@@ -61,15 +68,15 @@ class QdrantStorage:
         self.client.delete(collection_name=self.collection, points_selector=filter_)
 
     def search(self, query_vector, top_k: int = 5, query_text: str | None = None):
-        results = self.client.search(
+        response = self.client.query_points(
             collection_name=self.collection,
-            query_vector=query_vector,
+            query=query_vector,
             with_payload=True,
             limit=max(top_k * 4, top_k),
         )
 
         ranked = []
-        for r in results:
+        for r in response.points:
             payload = getattr(r, "payload", None) or {}
             text = payload.get("text", "")
             source = payload.get("source", "")
