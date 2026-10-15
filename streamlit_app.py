@@ -70,6 +70,10 @@ st.markdown(
     [data-testid="stSidebar"] * {
         color: var(--gray-100) !important;
     }
+    [data-testid="stChatMessageAvatarUser"],
+    [data-testid="stChatMessageAvatarAssistant"] {
+        display: none !important;
+    }
     [data-testid="stFileUploader"] {
         display: flex;
         flex-direction: column;
