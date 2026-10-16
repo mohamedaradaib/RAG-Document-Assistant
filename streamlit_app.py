@@ -38,19 +38,73 @@ st.markdown(
         color: var(--gray-100) !important;
     }
     .block-container {
-        padding-top: 2rem;
+        padding-top: 5rem;
         padding-bottom: 4rem;
         background: var(--gray-700) !important;
     }
+    .st-key-app-header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        box-sizing: border-box;
+        padding: 0.5rem 1.5rem;
+        background: var(--gray-950);
+        border-bottom: 1px solid rgba(209, 213, 219, 0.12);
+        z-index: 1001;
+    }
+    .st-key-app-header [data-testid="stHorizontalBlock"] {
+        display: grid !important;
+        grid-template-columns: 7rem minmax(0, 1fr) 7rem;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .st-key-app-header [data-testid="stColumn"] {
+        width: 100% !important;
+        min-width: 0 !important;
+        flex: none !important;
+    }
+    .st-key-app-header [data-testid="stPopoverButton"],
+    .st-key-app-header .stLinkButton,
+    .st-key-app-header .stLinkButton > a {
+        width: 100% !important;
+        box-sizing: border-box;
+        justify-content: center;
+        white-space: nowrap;
+    }
+    .st-key-app-header .stLinkButton > a {
+        background: transparent !important;
+        border: 0 !important;
+        padding: 0.6rem 1.1rem !important;
+        box-shadow: none !important;
+        transition: color 0.15s;
+    }
+    .st-key-app-header .stLinkButton > a:hover,
+    .st-key-app-header .stLinkButton > a:focus-visible {
+        background: transparent !important;
+        border: 0 !important;
+        box-shadow: none !important;
+        text-decoration: none !important;
+    }
+    .st-key-app-header .header-title {
+        font-size: 1.5rem;
+        line-height: 1.2;
+        font-weight: 700;
+        text-align: center;
+        white-space: nowrap;
+    }
+    .st-key-app-header [data-testid="stMarkdownContainer"] {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
     [data-testid="stHeader"] {
-        background: var(--gray-950) !important;
-        border-bottom: none !important;
+        display: none !important;
     }
     [data-testid="stPopover"] {
-        position: fixed !important;
-        top: 0.625rem;
-        right: 1.25rem;
-        width: max-content !important;
+        position: relative !important;
+        top: auto;
+        right: auto;
+        width: 100% !important;
         z-index: 1000000;
     }
     [data-testid="stPopoverButton"] {
@@ -110,6 +164,7 @@ st.markdown(
     }
     [data-testid="stFileUploaderDropzone"] button,
     .stButton > button,
+    .stLinkButton > a,
     [data-testid="stFormSubmitButton"] button {
         background: var(--gray-950) !important;
         color: var(--gray-100) !important;
@@ -120,6 +175,7 @@ st.markdown(
     }
     [data-testid="stFileUploaderDropzone"] button:hover,
     .stButton > button:hover,
+    .stLinkButton > a:hover,
     [data-testid="stFormSubmitButton"] button:hover {
         background: var(--gray-800) !important;
         border-color: rgba(209, 213, 219, 0.36) !important;
@@ -205,9 +261,10 @@ def upload_document(file) -> str:
 header_slot = st.empty()
 uploaded = st.file_uploader(
     "Upload or drag and drop a Document",
-    type=["pdf", "docx", "html", "htm", "txt", "md"],
+    type=["pdf", "docx", "html", "htm", "txt", "md", "csv"],
     accept_multiple_files=True,
 )
+st.caption("Document types: PDF, DOCX, HTML, Markdown, TXT, CSV")
 
 async def send_rag_query_event(question: str, top_k: int, chat_history: list[dict] | None = None) -> None:
     client = get_inngest_client()
@@ -280,10 +337,8 @@ else:
         st.session_state.processed_uploads.add(fingerprint)
         st.success(f"Processed {file.name}: {output.get('ingested', 0)} chunks.")
 
-with header_slot.container():
-    _, title_column, documents_column = st.columns([1, 2, 1])
-    with title_column:
-        st.title("RAG Document Assistant")
+with header_slot.container(key="app-header"):
+    documents_column, title_column, contact_column = st.columns([1, 4, 1])
     with documents_column:
         with st.popover("Documents", use_container_width=True):
             try:
@@ -304,6 +359,10 @@ with header_slot.container():
                             st.error(f"Couldn't remove {source}: {exc}")
             else:
                 st.caption("No documents indexed yet.")
+    with title_column:
+        st.markdown('<div class="header-title">RAG Document Assistant</div>', unsafe_allow_html=True)
+    with contact_column:
+        st.link_button("Contact", "mailto:mohamedaradaib1@gmail.com", use_container_width=True)
 
 
 if "messages" not in st.session_state:

@@ -4,7 +4,7 @@ An Aritifical Intelligence Document Assistant that utilizes Retrieval-Augmented 
 
 ## Features
 
-- Upload multiple files in supported formats: PDF, DOCX, HTML, TXT, and Markdown
+- Upload multiple files in supported formats: PDF, DOCX, HTML, Markdown, TXT, and CSV
 - Extract text and split large documents into overlapping chunks
 - Generate embeddings with the OpenAI `text-embedding-3-large` model
 - Store chunks in a Qdrant collection keyed by document source
